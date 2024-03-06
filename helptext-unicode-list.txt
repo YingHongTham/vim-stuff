@@ -1,0 +1,8 @@
+" vim: filetype=help foldmethod=marker foldmarker=<<<,>>> modifiable noreadonly
+
+see also https://vim.fandom.com/wiki/Add_your_note_files_to_Vim_help
+and :help help-writing or write-local-help
+
+*helptext-unicode-list.txt* Some useful Unicode not covered by digraphs
+(recall unicode entered with C-v uXXXX)
+U+2209 ∉

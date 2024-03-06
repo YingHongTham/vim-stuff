@@ -1,5 +1,10 @@
-" meant to sit at ~/.config/nvim/ftplugin/tex.vim
+" soft-linked from ~/.config/nvim/ftplugin/tex.vim
 " see also default /usr/local/share/nvim/runtime/ftplugin/tex.vim 
+
+if exists("b:mytex_ftplugin")
+  finish
+endif
+let b:mytex_ftplugin = 1
 
 "nmap <F3> :!pdflatex main.tex<CR>
 nmap <F4> :!pdflatex %<CR>

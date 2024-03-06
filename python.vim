@@ -1,15 +1,12 @@
-" soft-linked from ~/.config/nvim/ftplugin/julia.vim
-" see also default /usr/local/share/nvim/runtime/ftplugin/julia.vim
-" TODO: search for function might fail; attempt down search;
-" display message if fail, don't yank anything
-
-if exists("b:myjulia_ftplugin")
+if exists("b:mypython_ftplugin")
   finish
 endif
-let b:myjulia_ftplugin = 1
+let b:mypython_ftplugin = 1
 
+" still doesn't work, this is a copy of YankJuliaFunction()
+" python vim default doesn't have matchit?
 " yank current function into clipboard (register "+)
-function YankJuliaFunction()
+function YankPythonFunction()
 	" save current cursor and screen position
 	let save_cursor = getcurpos()
 	let save_winview = winsaveview()
@@ -32,7 +29,7 @@ endfunction
 
 " yank current block into clipboard (register "+)
 " blocks are delineated with markers #++#
-function YankJuliaBlock()
+function YankPythonBlock()
 	" save current cursor position
 	let save_cursor = getcurpos()
 	let save_winview = winsaveview()
@@ -57,8 +54,8 @@ function YankJuliaBlock()
 	call winrestview(save_winview)
 endfunction
 
-nmap <F6> :call YankJuliaFunction()<CR>
-nmap <F7> :call YankJuliaBlock()<CR>
+nmap <F6> :call YankPythonFunction()<CR>
+nmap <F7> :call YankPythonBlock()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " modified from Slime Vim
@@ -66,23 +63,24 @@ nmap <F7> :call YankJuliaBlock()<CR>
 "let output = substitute(a:text, " ", "\\\\ ", "g")
 
 function Send_Clipboard_to_Pane()
-	if !exists("g:julia_pane")
-		call Set_Julia_Pane_Prompt()
+	if !exists("g:python_pane")
+		call Set_Python_Pane_Prompt()
 	end
 
 	" create a buffer in tmux called x-clip and copy contents from clipboard
-	call system("tmux set-buffer -b x-clip \"$(xclip -o -selection clipboard)\"")
-	call system("tmux paste-buffer -b x-clip -t " . g:julia_pane)
-	call system("tmux send-keys -t " . g:julia_pane . " 'Enter'")
+	" add # to empty lines
+	call system("tmux set-buffer -b x-clip \"$(xclip -o -selection clipboard | sed \"s/^$/#/g\")\"")
+	call system("tmux paste-buffer -b x-clip -t " . g:python_pane)
+	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
 endfunction
 
-function Set_Julia_Pane_Prompt()
-	if !exists("g:julia_pane")
+function Set_Python_Pane_Prompt()
+	if !exists("g:python_pane")
 		" suggested default value
-		let g:julia_pane = "1"
+		let g:python_pane = "1"
 	end
 
-	let g:julia_pane = input("tmux pane: ", g:julia_pane)
+	let g:python_pane = input("tmux pane: ", g:python_pane)
 endfunction
 
 "nmap <F9> :call Send_to_Pane(@+)<CR>
@@ -93,3 +91,4 @@ nmap <F9> :call Send_Clipboard_to_Pane()<CR>
 
 
 "let wordUnderCursor = expand("<cword>")
+
