@@ -2,11 +2,27 @@
 " see also default /usr/local/share/nvim/runtime/ftplugin/julia.vim
 " TODO: search for function might fail; attempt down search;
 " display message if fail, don't yank anything
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" modified from Slime Vim
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if exists("b:myjulia_ftplugin")
   finish
 endif
 let b:myjulia_ftplugin = 1
+
+function Set_Julia_Pane_Prompt()
+	if !exists("g:julia_pane")
+		" suggested default value
+		let g:julia_pane = "1"
+	end
+
+	let g:julia_pane = input("tmux pane: ", g:julia_pane)
+endfunction
+
+"=============================================================
+" functionalities for selection and copying text
+"=============================================================
 
 " yank current function into clipboard (register "+)
 function YankJuliaFunction()
@@ -60,10 +76,12 @@ endfunction
 nmap <F6> :call YankJuliaFunction()<CR>
 nmap <F7> :call YankJuliaBlock()<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" modified from Slime Vim
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"=============================================================
+" functionalities for sending text to REPL pane
+"=============================================================
+
 "let output = substitute(a:text, " ", "\\\\ ", "g")
+" ^maybe try sed like in python.vim
 
 function Send_Clipboard_to_Pane()
 	if !exists("g:julia_pane")
@@ -76,17 +94,17 @@ function Send_Clipboard_to_Pane()
 	call system("tmux send-keys -t " . g:julia_pane . " 'Enter'")
 endfunction
 
-function Set_Julia_Pane_Prompt()
-	if !exists("g:julia_pane")
-		" suggested default value
-		let g:julia_pane = "1"
+" send Enter keypress; needed if last thing had a scope
+function Send_Enter_to_Pane()
+	if !exists("g:python_pane")
+		call Set_Python_Pane_Prompt()
 	end
-
-	let g:julia_pane = input("tmux pane: ", g:julia_pane)
+	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
 endfunction
 
 "nmap <F9> :call Send_to_Pane(@+)<CR>
 nmap <F9> :call Send_Clipboard_to_Pane()<CR>
+nmap <leader><F9> :call Send_Enter_to_Pane()<CR>
 
 
 " maybe try to pipe into some buffer then pipe to tmux? or just to bash?

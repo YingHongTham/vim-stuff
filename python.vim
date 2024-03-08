@@ -3,6 +3,20 @@ if exists("b:mypython_ftplugin")
 endif
 let b:mypython_ftplugin = 1
 
+
+function Set_Python_Pane_Prompt()
+	if !exists("g:python_pane")
+		" suggested default value
+		let g:python_pane = "1"
+	end
+
+	let g:python_pane = input("tmux pane: ", g:python_pane)
+endfunction
+
+"=============================================================
+" functionalities for selection and copying text
+"=============================================================
+
 " still doesn't work, this is a copy of YankJuliaFunction()
 " python vim default doesn't have matchit?
 " yank current function into clipboard (register "+)
@@ -57,10 +71,9 @@ endfunction
 nmap <F6> :call YankPythonFunction()<CR>
 nmap <F7> :call YankPythonBlock()<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" modified from Slime Vim
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"let output = substitute(a:text, " ", "\\\\ ", "g")
+"=============================================================
+" functionalities for sending text to REPL pane
+"=============================================================
 
 function Send_Clipboard_to_Pane()
 	if !exists("g:python_pane")
@@ -74,17 +87,17 @@ function Send_Clipboard_to_Pane()
 	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
 endfunction
 
-function Set_Python_Pane_Prompt()
+" send Enter keypress; needed if last thing had a scope
+function Send_Enter_to_Pane()
 	if !exists("g:python_pane")
-		" suggested default value
-		let g:python_pane = "1"
+		call Set_Python_Pane_Prompt()
 	end
-
-	let g:python_pane = input("tmux pane: ", g:python_pane)
+	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
 endfunction
 
 "nmap <F9> :call Send_to_Pane(@+)<CR>
 nmap <F9> :call Send_Clipboard_to_Pane()<CR>
+nmap <leader><F9> :call Send_Enter_to_Pane()<CR>
 
 
 " maybe try to pipe into some buffer then pipe to tmux? or just to bash?
