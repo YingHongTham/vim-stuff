@@ -82,7 +82,10 @@ function Send_Clipboard_to_Pane()
 
 	" create a buffer in tmux called x-clip and copy contents from clipboard
 	" add # to empty lines
-	call system("tmux set-buffer -b x-clip \"$(xclip -o -selection clipboard | sed \"s/^$/#/g\")\"")
+	let xclipstr = "xclip -o -selection clipboard"
+	let xclipstr .= " | sed \"s/^$/#/\""
+	let xclipstr .= " | sed \"s/^#end.*//\""
+	call system("tmux set-buffer -b x-clip \"$(" . xclipstr . ")\"")
 	call system("tmux paste-buffer -b x-clip -t " . g:python_pane)
 	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
 endfunction
