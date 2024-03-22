@@ -7,7 +7,7 @@ endif
 let b:mytex_ftplugin = 1
 
 "nmap <F3> :!pdflatex main.tex<CR>
-nmap <F4> :!pdflatex %<CR>
+nmap <F4> :!pdflatex -synctex=1 %<CR>
 
 "===========================================================
 " compiling only section of tex file
@@ -108,3 +108,33 @@ endfunction
 
 nmap <F7> :call SendCompileSnippet()<CR>
 nmap <F9> :call OpenTmpPDFViewer()<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vimura
+" uses SyncTex to send navigation between vim and zathura..
+
+function SetPDFFilePrompt()
+	if !exists("g:syncPDFfile")
+		" suggested default value
+		let g:syncPDFfile = expand('%:r') . ".pdf"
+	end
+
+	let g:syncPDFfile = input("PDF File: ", g:syncPDFfile)
+endfunction
+
+" default is current filename.tex -> filename.pdf
+function OpenZathura()
+	if !exists("g:syncPDFfile")
+		call SetPDFFilePrompt()
+	end
+	echo g:syncPDFfile
+	call system("\~/Documnets/coding-stuff/vim-stuff/vimura.sh " . g:syncPDFfile)
+endfunction
+
+function Synctex()
+	" remove 'silent' for debugging
+	execute "silent !zathura --synctex-forward " . line('.') . ":" . col('.') . ":" . bufname('%') . " " . g:syncPDFfile
+endfunction
+
+map <C-enter> :call Synctex()<cr>
+

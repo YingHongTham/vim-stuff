@@ -82,6 +82,8 @@ function Send_Clipboard_to_Pane()
 
 	" create a buffer in tmux called x-clip and copy contents from clipboard
 	" add # to empty lines
+	" but this doesn't end a function/for loop scope
+	" must manually add a #end at the end of function
 	let xclipstr = "xclip -o -selection clipboard"
 	let xclipstr .= " | sed \"s/^$/#/\""
 	let xclipstr .= " | sed \"s/^#end.*//\""

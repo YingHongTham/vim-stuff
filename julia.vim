@@ -2,6 +2,10 @@
 " see also default /usr/local/share/nvim/runtime/ftplugin/julia.vim
 " TODO: search for function might fail; attempt down search;
 " display message if fail, don't yank anything
+" TODO: look at others' examples:
+" https://discourse.julialang.org/t/send-lines-to-repl-in-tmux/43772
+" https://github.com/pangoraw/neige.jl
+" https://discourse.julialang.org/t/neovim-tmux-sending-a-full-function-to-the-repl-like-vscode/99590
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " modified from Slime Vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -96,10 +100,10 @@ endfunction
 
 " send Enter keypress; needed if last thing had a scope
 function Send_Enter_to_Pane()
-	if !exists("g:python_pane")
-		call Set_Python_Pane_Prompt()
+	if !exists("g:julia_pane")
+		call Set_Julia_Pane_Prompt()
 	end
-	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
+	call system("tmux send-keys -t " . g:julia_pane . " 'Enter'")
 endfunction
 
 "nmap <F9> :call Send_to_Pane(@+)<CR>
