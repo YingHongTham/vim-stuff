@@ -1,6 +1,5 @@
 #!/bin/bash
 
 ## expect one argument, the pdf filename
-echo $1
-zathura -x "gvim --servername $1 -c \"let g:syncpdf='$1'\" --remote +%{line} %{input}" $*
-
+## zathura freezes; just calling zathura allows one way (from vim to pdf)
+#zathura -x "vim --servername vim -c \"let g:syncPDFfile='$1'\" --remote +%{line} %{input}" $*
