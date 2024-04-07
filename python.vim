@@ -86,7 +86,7 @@ function Send_Clipboard_to_Pane()
 	" must manually add a #end at the end of function
 	let xclipstr = "xclip -o -selection clipboard"
 	let xclipstr .= " | sed \"s/^$/#/\""
-	let xclipstr .= " | sed \"s/^#end.*//\""
+	let xclipstr .= " | perl -0pe \"s/(#\\n)+([^#\\s])/\\n\\2/g;s/#$//\""
 	call system("tmux set-buffer -b x-clip \"$(" . xclipstr . ")\"")
 	call system("tmux paste-buffer -b x-clip -t " . g:python_pane)
 	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
