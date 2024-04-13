@@ -3,15 +3,14 @@ if exists("b:mypython_ftplugin")
 endif
 let b:mypython_ftplugin = 1
 
+" basic stuff
+set expandtab
+" these seems to be overriden by /usr/local/share/nvim/runtime/ftplugin/python.vim
+set shiftwidth=2
+set tabstop=2
+set softtabstop=2
 
-function Set_Python_Pane_Prompt()
-	if !exists("g:python_pane")
-		" suggested default value
-		let g:python_pane = "1"
-	end
 
-	let g:python_pane = input("tmux pane: ", g:python_pane)
-endfunction
 
 "=============================================================
 " functionalities for selection and copying text
@@ -75,18 +74,33 @@ nmap <F7> :call YankPythonBlock()<CR>
 " functionalities for sending text to REPL pane
 "=============================================================
 
+function Set_Python_Pane_Prompt()
+	if !exists("g:python_pane")
+		" suggested default value
+		let g:python_pane = "1"
+	end
+
+	let g:python_pane = input("tmux pane: ", g:python_pane)
+endfunction
+
+
 function Send_Clipboard_to_Pane()
 	if !exists("g:python_pane")
 		call Set_Python_Pane_Prompt()
 	end
 
 	" create a buffer in tmux called x-clip and copy contents from clipboard
-	" add # to empty lines
-	" but this doesn't end a function/for loop scope
-	" must manually add a #end at the end of function
 	let xclipstr = "xclip -o -selection clipboard"
+	" add # to empty lines
 	let xclipstr .= " | sed \"s/^$/#/\""
-	let xclipstr .= " | perl -0pe \"s/(#\\n)+([^#\\s])/\\n\\2/g;s/#$//\""
+	" turn #\n#\n...#\n[non-space] into \n[non-space], closes a scope
+	let xclipstr .= " | perl -0pe \"s/(#\\n)+([^#\\s])/\\n\\2/g\""
+	" if there are no other statements after the last scope,
+	" we add a newline so that the REPL will close
+	" (need the # after newline otherwise REPL ignores trailing newlines...?)
+	" (also don't want to add this new line if last statement is not in a scope,
+	" so check for leading whitespace character, \h)
+	let xclipstr .= " | perl -0pe \"s/\\n(\\h)(.*)\\n(#\\n)*$/\\n\\1\\2\\n\\n#\\n/\""
 	call system("tmux set-buffer -b x-clip \"$(" . xclipstr . ")\"")
 	call system("tmux paste-buffer -b x-clip -t " . g:python_pane)
 	call system("tmux send-keys -t " . g:python_pane . " 'Enter'")
