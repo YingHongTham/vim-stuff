@@ -132,9 +132,12 @@ function OpenZathura()
 endfunction
 
 function Synctex()
+	if !exists("g:syncPDFfile")
+		call SetPDFFilePrompt()
+	end
 	" remove 'silent' for debugging
 	execute "silent !zathura --synctex-forward " . line('.') . ":" . col('.') . ":" . bufname('%') . " " . g:syncPDFfile
 endfunction
 
-map <C-enter> :call Synctex()<cr>
+map <F5> :call Synctex()<cr>
 
