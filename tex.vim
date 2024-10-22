@@ -112,6 +112,7 @@ nmap <F9> :call OpenTmpPDFViewer()<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vimura
 " uses SyncTex to send navigation between vim and zathura..
+" https://gist.github.com/vext01/16df5bd48019d451e078
 
 function SetPDFFilePrompt()
 	if !exists("g:syncPDFfile")
@@ -127,7 +128,7 @@ function OpenZathura()
 	if !exists("g:syncPDFfile")
 		call SetPDFFilePrompt()
 	end
-	echo g:syncPDFfile
+	echo "\~/Documnets/coding-stuff/vim-stuff/vimura.sh " . g:syncPDFfile
 	call system("\~/Documnets/coding-stuff/vim-stuff/vimura.sh " . g:syncPDFfile)
 endfunction
 
