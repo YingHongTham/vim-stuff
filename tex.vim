@@ -6,14 +6,11 @@ if exists("b:mytex_ftplugin")
 endif
 let b:mytex_ftplugin = 1
 
-
 " use gq to force max line width to 80; tw=textwidth
 "set tw=80
 
-"nmap <F3> :!pdflatex main.tex<CR>
-nmap <F4> :!pdflatex %<CR>
-" no synctex until I figure out the zathura issue
 nmap <F3> :!pdflatex -synctex=1 %<CR>
+nmap <F4> :!pdflatex %<CR>
 
 "===========================================================
 " compiling only section of tex file
