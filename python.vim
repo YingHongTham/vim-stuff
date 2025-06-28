@@ -38,12 +38,8 @@ function YankPythonFunction(comment_blanklines)
 
 	" sanitize the function, ie replace blanklines with #
 	if a:comment_blanklines == 1
-		let @+ = BlankLinesIntoComments(@+)
+		let @+ = BlankLinesToComments(@+)
 	end
-	"if a:comment_blanklines == 1
-	"	let @+ = substitute(@+, '\n\n', '\n\#\n', 'g')
-	"	let @+ = substitute(@+, '\n\#\n$', '\n\n', '')
-	"end
 
 	" return cursor and screen to start position
 	call setpos('.', save_cursor)
@@ -74,7 +70,7 @@ function YankPythonBlock(comment_blanklines)
 
 	" sanitize the code block, ie replace blanklines with #
 	if a:comment_blanklines == 1
-		let @+ = BlankLinesIntoComments(@+)
+		let @+ = BlankLinesToComments(@+)
 	end
 
 	" return cursor to start position
@@ -82,8 +78,11 @@ function YankPythonBlock(comment_blanklines)
 	call winrestview(save_winview)
 endfunction
 
-function! BlankLinesIntoComments(str)
-	return substitute(a:str, '\n\n\(\s\)', '\n\#\n\1', 'g')
+" replace blank lines with commented line
+" but not those blank lines outside some function or class
+" trick is to check if the following line starts with a space/tab
+function! BlankLinesToComments(str)
+	return substitute(a:str, '\n\+\n\(\s\)', '\n\#\n\1', 'g')
 endfunction
 
 nmap <F6> :call YankPythonFunction(1)<CR>
@@ -180,8 +179,6 @@ function! DeactivateEnterPasteIntoREPLModel()
 endfunction
 	
 
-" a bit buggy, weird changing cursor position in target buffer
-" but for current application to paste in python REPL should be ok
 function! PasteIntoREPLFn(win_id, ...)
 	let l:cur_win_id = win_getid()
 	let l:contents = getreg("+")
@@ -190,12 +187,10 @@ function! PasteIntoREPLFn(win_id, ...)
 	end
 	let l:tmp_register = getreg("z")
 	let l:len = len(l:contents)
-	echom "l:contents length: " . l:len
 	if l:contents[l:len-1] == "\r"
 		let @z=l:contents
 	elseif l:contents[l:len-1] == "\n"
 		let @z = substitute(l:contents, '\n$', '\r', '')	
-		"let @z=l:contents[: l:len-2] . "\r"
 	else
 		let @z=l:contents . "\r"
 	end
@@ -262,52 +257,3 @@ function! GoToREPLEOF()
 	end
 	call GoToREPLEOFFn(g:python_window)
 endfunction
-
-"" redo properly with window number
-"function! PasteEnterIntoREPLFn(buf_num)
-"	let l:cur_buf = bufnr('%')
-"	execute ":buffer " . a:buf_num
-"	echom getcurpos()
-"	execute "normal! G"
-"	let l:tmp_register = getreg("z")
-"	let @z="\n\n"
-"	execute "normal! \"zp"
-"	let @z=l:tmp_register
-"	execute ":buffer " . l:cur_buf
-"endfunction
-
-"" a:0 is num args, a:1,...,a:n the args;
-"" also can do get(a:, k, dflt_val) to get a:k if provided
-"function! Set_Python_Buffer_Prompt(...)
-"	echo a:0
-"	if a:0 > 0
-"		let g:python_buffer = a:1
-"		return
-"	end
-"
-"	let l:python_buffer_tmp = input("python buffer: ", "")
-"	if l:python_buffer_tmp != ""
-"		let g:python_buffer = l:python_buffer_tmp
-"	end
-"endfunction
-
-"" send Enter keypress; needed if last thing had a scope
-"function! PasteIntoREPL()
-"	if !exists("g:python_buffer")
-"		call Set_Python_Buffer_Prompt()
-"	end
-"	call PasteIntoREPLFn(g:python_buffer)
-"endfunction
-
-"" buggy, sends as many copies as there are lines in yanked
-"function! PasteIntoREPLVMode()
-"	execute "normal! gv\"+y"
-"	call PasteIntoREPL()
-"endfunction
-
-"function! PasteEnterIntoREPL()
-"	if !exists("g:python_buffer")
-"		call Set_Python_Buffer_Prompt()
-"	end
-"	call PasteEnterIntoREPLFn(g:python_buffer)
-"endfunction
