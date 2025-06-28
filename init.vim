@@ -32,12 +32,12 @@
 " => Packages/plugin added 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call plug#begin()
-" On-demand loading
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-call plug#end()
-
-Plug 'eslint/eslint'
+""call plug#begin()
+""" On-demand loading
+""Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+""call plug#end()
+""
+""Plug 'eslint/eslint'
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -45,10 +45,22 @@ Plug 'eslint/eslint'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 "send to clipboard selection
+nmap <C-B> :call CopyRegisterToClipboard() <cr>
+vmap <C-B> "+y
 vmap <F8> "+y
+
+function! CopyRegisterToClipboard()
+	let @+=getreg(v:register)
+endfunction
 
 "change shortcut for digraph
 inoremap <C-U> <C-K>
+
+"movement in terminal mode
+tmap <C-W><ESC> <C-\><C-N>
+tmap <C-W>w <C-\><C-N><C-W>w
+
+"""""""""
 
 " Sets how many lines of history VIM has to remember
 set history=700
@@ -150,6 +162,7 @@ set encoding=utf8
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
+highlight String ctermfg=Red
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -192,6 +205,9 @@ nmap O O<esc>
 " Inserts space before cursor
 map <leader><space> i<space><esc>l
 
+set formatoptions+=j
+set formatoptions+=r
+
 """"""""""""""""""""""""""""""
 " => Visual mode related
 """"""""""""""""""""""""""""""
@@ -215,8 +231,8 @@ inoremap <A-k> <Up>
 inoremap <A-l> <Right>
 
 " Scroll in insert mode
-imap <C-J> <C-X><C-E>
-imap <C-K> <C-X><C-Y>
+"imap <C-J> <C-X><C-E>
+"imap <C-K> <C-X><C-Y>
 
 " Map Ctrl-Backspace to delete the previous word in insert mode.
 " doesn't seem to work...
@@ -456,4 +472,3 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
-
